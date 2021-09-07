@@ -1,0 +1,29 @@
+image: alpine:3.7
+
+before_script: 
+  - 'which ssh-agent || ( apk update && apk add openssh-client && apk add bash && apk add rsync)'
+  - mkdir ~/.ssh && touch known_hosts
+  - echo "$PUBLIC_HOST_KEY" >> ~/.ssh/known_hosts
+  - eval $(ssh-agent -s)
+  - bash -c "ssh-add <(echo '$PRIVATE_SSH_KEY')"
+  - chmod 700 ~/.ssh
+stages:
+  - prod
+
+# deploy_test:
+#   only:
+#     refs:
+#       - dev
+#   stage: dev
+#   script:
+#     - ssh -o StrictHostKeyChecking=no handson@handson-mern.provision.cs.odu.edu "cd /home/handson/tems-backend/dev && npm install && pm2 reload all && exit"
+#     - ssh-agent -k
+
+deploy_prod:
+  only:
+    refs:
+      - master
+  stage: prod
+  script:
+    - ssh -o StrictHostKeyChecking=no root@pmap.cs.odu.edu "cd /home/sshivaji/hotspot-be/  && git checkout master && git pull origin master && pm2 reload hotspot.js"
+    - ssh-agent -k
