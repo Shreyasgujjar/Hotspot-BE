@@ -145,7 +145,7 @@ router.post("/addnewmac", (req, res) => {
         } else {
             devices.create({ mainDeviceId: req.body.mainDeviceId, deviceMac: req.body.deviceMac }).then(result => {
                 res.status(200).json({
-                    message: "Added Mac successfully",
+                    message: "Added Mac successfully ",
                     status: "SUCCESS"
                 })
             }).catch(error => {
