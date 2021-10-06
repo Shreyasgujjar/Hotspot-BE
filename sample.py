@@ -163,22 +163,22 @@ def checkAndAuthoriseDevices():
             newData["deviceMac"] = macs[i]
             if len(deviceData["data"]) != 0:
                 if deviceData["data"][0]["authorised"] == True:
-                    if not Authorised(ip):
+                    if not Authorised(ips[i]):
                         print("At - " + str(datetime.datetime.now()))
                         dataToSend.append(newData)
-                        os.system("iptables -w -t filter -I vpnhotspot_acl -i " + wlan_details + " -s " + ip + " -j ACCEPT")
-                        print("iptables -w -t filter -I vpnhotspot_acl -i " + wlan_details + " -s " + ip + " -j ACCEPT")
-                        os.system("iptables -w -t filter -I vpnhotspot_acl -o " + wlan_details + " -d " + ip + " -j ACCEPT")
-                        print("iptables -w -t filter -I vpnhotspot_acl -o " + wlan_details + " -d " + ip + " -j ACCEPT")
+                        os.system("iptables -w -t filter -I vpnhotspot_acl -i " + wlan_details + " -s " + ips[i] + " -j ACCEPT")
+                        print("iptables -w -t filter -I vpnhotspot_acl -i " + wlan_details + " -s " + ips[i] + " -j ACCEPT")
+                        os.system("iptables -w -t filter -I vpnhotspot_acl -o " + wlan_details + " -d " + ips[i] + " -j ACCEPT")
+                        print("iptables -w -t filter -I vpnhotspot_acl -o " + wlan_details + " -d " + ips[i] + " -j ACCEPT")
                     else:
-                        collectAndSendData(ip)
-                        print("The ip - " + ip + " is already authorised")
+                        collectAndSendData(ips[i])
+                        print("The ip - " + ips[i] + " is already authorised")
                 else:
-                    if Authorised(ip):
-                        deauthoriseDevice(ip)
-                        print("Deauthorised - " + ip)
+                    if Authorised(ips[i]):
+                        deauthoriseDevice(ips[i])
+                        print("Deauthorised - " + ips[i])
                     else:
-                        print("IP - " + ip + " not in the Authorised list to deauthorise")
+                        print("IP - " + ips[i] + " not in the Authorised list to deauthorise")
             r = requests.post(endPoint + "device/checkandcreate", json=newData)
             print(r)
         except json.decoder.JSONDecodeError:
