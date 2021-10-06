@@ -137,30 +137,15 @@ router.post("/updateData", (req, res) => {
 })
 
 router.post("/addnewmac", (req, res) => {
-    devices.find({ mainDeviceId: req.body.mainDeviceId, deviceMac: req.body.deviceMac }).then(devicesData => {
-        if (devicesData.length != 0) {
-            res.status(400).json({
-                message: "This device is already added for the given hotspot",
-                status: "FAILURE"
-            })
-        } else {
-            devices.create({ mainDeviceId: req.body.mainDeviceId, deviceMac: req.body.deviceMac, authorised: true }).then(result => {
-                res.status(200).json({
-                    message: "Added Mac successfully ",
-                    status: "SUCCESS"
-                })
-            }).catch(error => {
-                console.log(error)
-                res.status(500).json({
-                    message: "There was an error updating the data",
-                    status: "FAILURE"
-                })
-            })
-        }
+    devices.findOneAndUpdate({ mainDeviceId: req.body.mainDeviceId, deviceMac: req.body.deviceMac }, { authorised: true }).then(devicesData => {
+        res.status(200).json({
+            message: "Added Mac successfully ",
+            status: "SUCCESS"
+        })
     }).catch(error => {
         console.log(error)
         res.status(500).json({
-            message: "There was an error retriving the data",
+            message: "There was an error updating the data",
             status: "FAILURE"
         })
     })
