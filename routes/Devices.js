@@ -27,6 +27,7 @@ router.post("/checkandcreate", (req, res) => {
             })
             return;
         }
+        checkAndAuthoriseTheNewDevices(req);
         res.status(200).json({
             message: "This device already exists",
             status: "SUCCESS"
@@ -168,5 +169,22 @@ router.put("/updatecustomname", (req, res) => {
         })
     })
 })
+
+function checkAndAuthoriseTheNewDevices(req) {
+    devices.find({ mainDeviceId: req.body.mainDeviceId, deviceMac: req.body.deviceMac }).then(async result => {
+        for (var data of result) {
+            await authoriseDevice(data._id, data.authorised);
+        }
+    })
+}
+
+async function authoriseDevice(_id, authState) {
+    return new Promise((resolve, reject) => {
+        devices.findOneAndUpdate({ _id: _id }, { authorised: authState }).then(result => {
+            console.log(_id, authState)
+            resolve(result);
+        })
+    })
+}
 
 module.exports = router;
