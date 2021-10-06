@@ -9,7 +9,8 @@ router.post("/checkandcreate", (req, res) => {
             devices.create({
                 mainDeviceId: req.body.mainDeviceId,
                 deviceIp: req.body.deviceIp,
-                authorised: true,
+                deviceMac: req.body.deviceMac,
+                authorised: false,
                 dataBytesIn: 0,
                 dataBytesOut: 0
             }).then(creationResult => {

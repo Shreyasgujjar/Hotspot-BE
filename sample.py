@@ -140,7 +140,7 @@ def turnOnVPNHotspot():
         checkAndAuthoriseDevices()
 
 def checkAndAuthoriseDevices():
-    ips = check_and_send_ip()
+    ips, macs = check_and_send_ip()
     ip_route_data = str(subprocess.check_output("ip route", shell=True)).split("\n")[-1].split(" ")
     # number = subprocess.check_output("cat /sys/class/net/tun0/ifindex", shell=True).decode("utf-8").split("\n")[0]
     # number = str(int(number) + 1000)
@@ -152,14 +152,15 @@ def checkAndAuthoriseDevices():
             break
     print("Checking to authorise devices")
     dataToSend = []
-    for ip in ips:
+    for i in range(0, len(ips)):
         newData = {}
-        r = requests.get(endPoint + "device/getall/" + mainDeviceId + "/" + ip)
+        r = requests.get(endPoint + "device/getall/" + mainDeviceId + "/" + ips[i])
         try:
             deviceData = dict(r.json())
             print(deviceData)
             newData["mainDeviceId"] = mainDeviceId
-            newData["deviceIp"] = ip
+            newData["deviceIp"] = ips[i]
+            newData["deviceMac"] = macs[i]
             if len(deviceData["data"]) != 0:
                 if deviceData["data"][0]["authorised"] == True:
                     if not Authorised(ip):
@@ -201,25 +202,31 @@ def check_and_send_ip():
     devices = data.decode("utf-8").split("\n")
     print(devices)
     ips = []
+    macs = []
     for device in devices[:-1]:
         if str(device).split(" ")[3] != "<incomplete>":
             ips.append(str(device).split(" ")[1][1:-1])
+            macs.append(str(device).split(" ")[3])
             data = {
                 "mac": str(device).split(" ")[3],
                 "ip": str(device).split(" ")[1][1:-1]
             }
             # results = db.child("users").child("device-"+str(str(device).split(" ")[1][1:-1]).split(".")[3]).set(data)
     time.sleep(5)
-    return ips
+    return ips, macs
 
 def deauthoriseDevice(deviceIpToDeAuthorise):
-    os.system("iptables -w -t filter -D vpnhotspot_acl -o wlan1 -d " + deviceIpToDeAuthorise + " -j ACCEPT")
-    print("iptables -w -t filter -D vpnhotspot_acl -o wlan1 -d " + deviceIpToDeAuthorise + " -j ACCEPT")
-    os.system("iptables -w -t filter -D vpnhotspot_acl -i wlan1 -s " + deviceIpToDeAuthorise + "  -j ACCEPT")
-    print("iptables -w -t filter -D vpnhotspot_acl -i wlan1 -s " + deviceIpToDeAuthorise + "  -j ACCEPT")
+    wlan_details = ""
+    dest_ip = ip_route_data[-2]
+    for data in ip_route_data:
+        if "wlan" in data:
+            wlan_details = data
+            break
+    os.system("iptables -w -t filter -D vpnhotspot_acl -o " + wlan_details + " -d " + deviceIpToDeAuthorise + " -j ACCEPT")
+    print("iptables -w -t filter -D vpnhotspot_acl -o " + wlan_details + " -d " + deviceIpToDeAuthorise + " -j ACCEPT")
+    os.system("iptables -w -t filter -D vpnhotspot_acl -i " + wlan_details + " -s " + deviceIpToDeAuthorise + "  -j ACCEPT")
+    print("iptables -w -t filter -D vpnhotspot_acl -i " + wlan_details + " -s " + deviceIpToDeAuthorise + "  -j ACCEPT")
 
-server_ip_address = subprocess.check_output("ifconfig wlan1 | grep 'inet :' | cut -d: -f2 | awk '{ print $1}'", shell=True)
-print(server_ip_address)
 
 def collectAndSendData(ip):
     data = subprocess.check_output("iptables -w -nvx -L vpnhotspot_acl", shell=True)
