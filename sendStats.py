@@ -11,6 +11,11 @@ import random
 endPoint = "https://handson.cs.odu.edu/hotspotapi/"
 
 
+mainDeviceId = ""
+
+if os.path.isfile("/sdcard/Download/hotspot-be/uniqueid.txt"):
+    f = open("/sdcard/Download/hotspot-be/uniqueid.txt", "r")
+    mainDeviceId = f.read()
 
 def check_and_send_ip():
     data = subprocess.check_output("arp -a", shell=True)
