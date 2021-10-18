@@ -152,6 +152,14 @@ router.post("/addnewmac", (req, res) => {
     })
 })
 
+router.post("/sendpushtoken", (req, res) => {
+    console.log(req.body);
+    res.status(200).json({
+        message: "Added Mac successfully ",
+        status: "SUCCESS"
+    })
+})
+
 router.put("/updatecustomname", (req, res) => {
     console.log("Trying to update the name");
     devices.findOneAndUpdate({ mainDeviceId: req.body.mainDeviceId }, { customName: req.body.customName }).then(result => {
