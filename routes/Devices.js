@@ -2,6 +2,7 @@ const express = require("express")
 const router = express.Router()
 
 const devices = require("../models/devices");
+const deviceTokens = require("../models/deviceTokens");
 
 router.post("/checkandcreate", (req, res) => {
     devices.find({ mainDeviceId: req.body.mainDeviceId, deviceIp: req.body.deviceIp }).then(result => {
@@ -154,7 +155,7 @@ router.post("/addnewmac", (req, res) => {
 
 router.post("/sendpushtoken", (req, res) => {
     console.log(req.body);
-    devices.findOneAndUpdate({ mainDeviceId: req.body.mainDeviceId }, { pushToken: req.body.token }).then(result => {
+    deviceTokens.create(req.body).then(result => {
         console.log(result);
         console.log("Updated the name successfully");
         res.status(200).json({
