@@ -155,19 +155,28 @@ router.post("/addnewmac", (req, res) => {
 
 router.post("/sendpushtoken", (req, res) => {
     console.log(req.body);
-    deviceTokens.create(req.body).then(result => {
-        console.log(result);
-        console.log("Updated the name successfully");
-        res.status(200).json({
-            message: "Updated the name successfully",
-            status: "SUCCESS"
-        })
-    }).catch(error => {
-        console.log(error);
-        res.status(500).json({
-            message: "There was an error updating the name",
-            status: "FAILURE"
-        })
+    deviceTokens.find(req.body).then(result => {
+        if (result.length == 0) {
+            deviceTokens.create(req.body).then(result => {
+                console.log(result);
+                console.log("Updated the name successfully");
+                res.status(200).json({
+                    message: "Updated the name successfully",
+                    status: "SUCCESS"
+                })
+            }).catch(error => {
+                console.log(error);
+                res.status(500).json({
+                    message: "There was an error updating the name",
+                    status: "FAILURE"
+                })
+            })
+        } else {
+            res.status(200).json({
+                message: "Updated the name successfully",
+                status: "SUCCESS"
+            })
+        }
     })
 })
 
