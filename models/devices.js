@@ -24,6 +24,9 @@ const DevicesSchema = new mongoose.Schema({
     customName: {
         type: String,
         default: null
+    },
+    pushToken: {
+        type: String
     }
 }, {
     timestamps: true
