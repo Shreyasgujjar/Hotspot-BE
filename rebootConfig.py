@@ -4,9 +4,21 @@ import subprocess
 def resetConfig():
     ip_route_data = str(subprocess.check_output("ip route", shell=True)).split("\n")[-1].split(" ")
     dest_ip = ip_route_data[-2]
-    lookUpName = subprocess.check_output("iptables -S | grep -E 'bw_INPUT.*rmnet'", shell=True).decode("utf-8").split(" ")[3]
-    lookUpNumber = int(subprocess.check_output("cat /sys/class/net/" + lookUpName + "/ifindex", shell=True).decode("utf-8")) + 1000
-    connectedDevices = subprocess.check_output("iptables -S | grep -E 'vpnhotspot_acl -d'", shell=True).decode("utf-8").split("\n")
+    lookUpName = ""
+    try:
+        lookUpName = subprocess.check_output("iptables -S | grep -E 'bw_INPUT.*rmnet'", shell=True).decode("utf-8").split(" ")[3]
+    except:
+        lookUpName = ""
+    lookUpNumber = 0
+    try:
+        lookUpNumber = int(subprocess.check_output("cat /sys/class/net/" + lookUpName + "/ifindex", shell=True).decode("utf-8")) + 1000
+    except:
+        lookUpNumber = 0
+    connectedDevices = []
+    try:
+        connectedDevices = subprocess.check_output("iptables -S | grep -E 'vpnhotspot_acl -d'", shell=True).decode("utf-8").split("\n")
+    except:
+        connectedDevices = []
     wlan_details = ""
     dest_ip = ip_route_data[-2]
     for data in ip_route_data:
