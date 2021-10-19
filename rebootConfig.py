@@ -33,6 +33,7 @@ def resetConfig():
     for data in connectedDevices:
         if data != '':
             os.system("iptables -w -t filter -D vpnhotspot_acl -o " + wlan_details + " -d " + data.split(" ")[3].split("/")[0] + " -j ACCEPT")
+            os.system("iptables -w -t filter -D vpnhotspot_acl -i " + wlan_details + " -d " + data.split(" ")[3].split("/")[0] + " -j ACCEPT")
             print(data.split(" ")[3].split("/")[0])
     os.system("iptables -w -t nat -D PREROUTING -i " + wlan_details +" -p udp -d " + dest_ip + " --dport 53 -j DNAT --to-destination 198.224.137.129")
     os.system("iptables -w -t nat -D PREROUTING -i " + wlan_details +" -p tcp -d " + dest_ip + " --dport 53 -j DNAT --to-destination 198.224.137.129")
