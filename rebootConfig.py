@@ -13,3 +13,5 @@ def resetConfig():
 
     print(dest_ip)
     print(wlan_details)
+
+resetConfig()
