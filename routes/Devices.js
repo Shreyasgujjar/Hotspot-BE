@@ -4,6 +4,8 @@ const router = express.Router()
 const devices = require("../models/devices");
 const deviceTokens = require("../models/deviceTokens");
 
+const { io } = require('./Socket');
+
 router.post("/checkandcreate", (req, res) => {
     devices.find({ mainDeviceId: req.body.mainDeviceId, deviceIp: req.body.deviceIp }).then(result => {
         if (result.length == 0) {
@@ -138,6 +140,17 @@ router.post("/updateData", (req, res) => {
     })
 })
 
+router.get("/sendsocket", (req, res) => {
+    io.emit("MUN6BN", {
+        userName: "Shreyas",
+        type: "restartHotspot"
+    })
+    res.status(200).json({
+        message: "Added Mac successfully ",
+        status: "SUCCESS"
+    })
+})
+
 router.post("/addnewmac", (req, res) => {
     devices.findOneAndUpdate({ mainDeviceId: req.body.mainDeviceId, deviceMac: req.body.deviceMac }, { authorised: true }).then(devicesData => {
         res.status(200).json({
@@ -215,4 +228,6 @@ async function authoriseDevice(_id, authState) {
     })
 }
 
-module.exports = router;
+module.exports = {
+    router: router
+};

@@ -5,11 +5,13 @@ const cookieParser = require('cookie-parser');
 var cors = require("cors");
 
 const connectDb = require("./database/db");
+const notificationService = require('./helpers/notificationService');
 
 const app = express();
 const port = process.env.PORT || 3010;
 
 const devices = require("./routes/Devices");
+const { server } = require("./routes/Socket");
 
 connectDb();
 app.use(express.static(__dirname, { dotfiles: 'allow' }));
@@ -25,7 +27,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use("/hotspotapi/device", devices);
+app.use("/hotspotapi/device", devices.router);
 
 app.get("/hotspotapi/", (req, res) => {
     res.status(200).json({
@@ -33,4 +35,6 @@ app.get("/hotspotapi/", (req, res) => {
     })
 })
 
+
 app.listen(port, () => console.log("app running at - " + port))
+server.listen(3010 + 1, () => console.log("socket running at - " + (3010 + 1)))
