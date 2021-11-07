@@ -158,13 +158,21 @@ router.post("/updateData", (req, res) => {
     })
 })
 
-router.get("/sendsocket", (req, res) => {
-    io.emit("MUN6BN", {
+router.get("/sendrestarthotspot/:mainDeviceId", (req, res) => {
+    io.emit(req.params.mainDeviceId, {
         userName: "Shreyas",
         type: "restartHotspot"
     })
     res.status(200).json({
-        message: "Added Mac successfully ",
+        message: "RestartedHotspot",
+        status: "SUCCESS"
+    })
+})
+
+router.get('/sendcheckmac/:mainDeviceId', (req, res) => {
+    io.emit(req.params.mainDeviceId, {type: "checkMac"})
+    res.status(200).json({
+        message: "Checking mac",
         status: "SUCCESS"
     })
 })
