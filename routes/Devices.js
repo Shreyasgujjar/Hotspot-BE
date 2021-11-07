@@ -5,7 +5,7 @@ const devices = require("../models/devices");
 const deviceTokens = require("../models/deviceTokens");
 
 router.post("/checkandcreate", (req, res) => {
-    devices.find({ mainDeviceId: req.body.mainDeviceId, deviceIp: req.body.deviceIp }).then(result => {
+    devices.find({ mainDeviceId: req.body.mainDeviceId, deviceMac: req.body.deviceMac }).then(result => {
         if (result.length == 0) {
             devices.create({
                 mainDeviceId: req.body.mainDeviceId,
@@ -27,6 +27,19 @@ router.post("/checkandcreate", (req, res) => {
                 })
             })
             return;
+        } else {
+            devices.findOneAndUpdate({ mainDeviceId: req.body.mainDeviceId, deviceMac: req.body.deviceMac }, {deviceIp: req.body.deviceIp}).then(result => {
+                res.status(200).json({
+                    message: "Device added successfully",
+                    status: "SUCCESS"
+                })
+            }).catch(error => {
+                console.log(error);
+                res.status(500).json({
+                    message: "There was an error creating the device",
+                    status: "FAILURE"
+                })
+            })
         }
         checkAndAuthoriseTheNewDevices(req);
         res.status(200).json({
@@ -139,17 +152,34 @@ router.post("/updateData", (req, res) => {
 })
 
 router.post("/addnewmac", (req, res) => {
-    devices.findOneAndUpdate({ mainDeviceId: req.body.mainDeviceId, deviceMac: req.body.deviceMac }, { authorised: true }).then(devicesData => {
-        res.status(200).json({
-            message: "Added Mac successfully ",
-            status: "SUCCESS"
-        })
-    }).catch(error => {
-        console.log(error)
-        res.status(500).json({
-            message: "There was an error updating the data",
-            status: "FAILURE"
-        })
+    devices.find({ mainDeviceId: req.body.mainDeviceId, deviceMac: req.body.deviceMac }).then(data => {
+        if(data.length == 0){
+            devices.create({
+                mainDeviceId: req.body.mainDeviceId,
+                deviceMac: req.body.deviceMac,
+                authorised: true,
+                dataBytesIn: 0,
+                dataBytesOut: 0
+            }).then(result => {
+                res.status(200).json({
+                    message: "Added Mac successfully ",
+                    status: "SUCCESS"
+                })
+            })
+        } else {
+            devices.findOneAndUpdate({ mainDeviceId: req.body.mainDeviceId, deviceMac: req.body.deviceMac }, { authorised: true }).then(devicesData => {
+                res.status(200).json({
+                    message: "Added Mac successfully ",
+                    status: "SUCCESS"
+                })
+            }).catch(error => {
+                console.log(error)
+                res.status(500).json({
+                    message: "There was an error updating the data",
+                    status: "FAILURE"
+                })
+            })
+        }
     })
 })
 
