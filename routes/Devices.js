@@ -1,4 +1,5 @@
-const express = require("express")
+const express = require("express");
+const { sendNotificationWithData } = require("../helpers/notificationService");
 const router = express.Router()
 
 const devices = require("../models/devices");
@@ -118,6 +119,10 @@ router.put("/updateAuthStatus", (req, res) => {
     devices.findOne({ mainDeviceId: req.body.mainDeviceId, deviceIp: req.body.deviceIp }).then(result => {
         var authStatus = !result.authorised;
         devices.findOneAndUpdate({ mainDeviceId: req.body.mainDeviceId, deviceIp: req.body.deviceIp }, { authorised: authStatus }).then(data => {
+            io.emit(req.body.mainDeviceId, 'checkMac')
+            deviceTokens.findOne({mainDeviceId: req.body.mainDeviceId}).then(result => {
+                sendNotificationWithData(result.pushToken, 'New message', 'Authorised devices changes', 'checkMac');
+            })
             res.status(200).json({
                 message: "Auth status updated successfully",
                 status: "SUCCESS"
