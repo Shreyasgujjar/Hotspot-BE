@@ -11,7 +11,7 @@ function sendNotification() {
             title: "New Message",
             text: "Please wait while we turn on the hotspot",
             postId: "postId",
-            type: "checkMac",
+            type: "restartHotspot",
             redirectPage: "FARMGATE"
         }
     };
@@ -27,16 +27,14 @@ function sendNotification() {
     });
 }
 
-async function sendNotificationWithData(token, title, text, postId) {
+async function sendNotificationWithData(token, title, text, type) {
     return new Promise(async(resolve, reject) => {
         console.log("called");
-        var type = await getType(postId);
         var message = {
             to: token,
             data: {
                 title: title,
                 text: text,
-                postId: postId,
                 type: type,
                 redirectPage: "FARMGATE"
             }
