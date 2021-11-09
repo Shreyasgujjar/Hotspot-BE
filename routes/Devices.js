@@ -160,8 +160,8 @@ router.post("/updateData", (req, res) => {
     })
 })
 
-router.get("/sendrestarthotspot/:mainDeviceId", (req, res) => {
-    io.emit(req.params.mainDeviceId, {
+router.post("/sendrestarthotspot", (req, res) => {
+    io.emit(req.body.mainDeviceId, {
         userName: "Shreyas",
         type: "restartHotspot"
     })
