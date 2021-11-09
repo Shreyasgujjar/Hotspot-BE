@@ -119,7 +119,9 @@ router.put("/updateAuthStatus", (req, res) => {
     devices.findOne({ mainDeviceId: req.body.mainDeviceId, deviceIp: req.body.deviceIp }).then(result => {
         var authStatus = !result.authorised;
         devices.findOneAndUpdate({ mainDeviceId: req.body.mainDeviceId, deviceIp: req.body.deviceIp }, { authorised: authStatus }).then(data => {
-            io.emit(req.body.mainDeviceId, 'checkMac')
+            io.emit(req.body.mainDeviceId, {
+                type: 'checkMac'
+            })
             deviceTokens.findOne({mainDeviceId: req.body.mainDeviceId}).then(result => {
                 sendNotificationWithData(result.pushToken, 'New message', 'Authorised devices changes', 'checkMac');
             })

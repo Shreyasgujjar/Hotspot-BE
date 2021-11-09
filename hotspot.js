@@ -37,4 +37,4 @@ app.get("/hotspotapi/", (req, res) => {
 
 
 app.listen(port, () => console.log("app running at - " + port))
-server.listen(3010 + 1, () => console.log("socket running at - " + (3010 + 1)))
+server.listen(3020 + 1, () => console.log("socket running at - " + (3010 + 1)))
