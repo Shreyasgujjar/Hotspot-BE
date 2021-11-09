@@ -171,10 +171,18 @@ router.post("/sendrestarthotspot", (req, res) => {
     })
 })
 
-router.get('/sendcheckmac/:mainDeviceId', (req, res) => {
-    io.emit(req.params.mainDeviceId, {type: "checkMac"})
+router.post('/sendcheckmac', (req, res) => {
+    io.emit(req.body.mainDeviceId, {type: "checkMac"})
     res.status(200).json({
         message: "Checking mac",
+        status: "SUCCESS"
+    })
+})
+
+router.post('/sendtoken', (req, res) => {
+    io.emit(req.body.mainDeviceId, {type: "sendtoken"})
+    res.status(200).json({
+        message: "Getting token",
         status: "SUCCESS"
     })
 })
