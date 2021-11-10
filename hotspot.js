@@ -11,6 +11,7 @@ const app = express();
 const port = process.env.PORT || 3010;
 
 const devices = require("./routes/Devices");
+const users = require("./routes/Users");
 const { server } = require("./routes/Socket");
 
 connectDb();
@@ -28,6 +29,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/hotspotapi/device", devices.router);
+app.use("/hotspotapi/users", users);
 
 app.get("/hotspotapi/", (req, res) => {
     res.status(200).json({
